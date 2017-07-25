@@ -1,0 +1,146 @@
+<!DOCTYPE>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=0.8, maximum-scale=1.0, user-scalable=no" />
+        <link rel="stylesheet" href="./index.css">
+        <script src='./zepto.1.2.0.min.js'></script>
+        <script src='./index.js'></script>
+    </head>
+    <body>
+        <!--
+        <div class="year">
+            <!--<div class="frame year_title">第一年</div> --》
+            <div class="month">
+                 <!-- <div class="frame month_title">第一个月</div> --》
+                <div class="week">
+                    <!-- <div class="day"> 
+                        第 0 天
+                    </div> --》
+                    <div class="addBtn">
+                         <div class="addIcon"></div> 
+                    </div>
+                </div>
+            </div>
+        </div>
+        -->
+
+         <div class="year">
+            <!-- <div class="frame year_title">第一年</div> -->
+            <div class="month">
+                <!-- <div class="frame month_title">第一个月</div> -->
+                <div class="week">
+                    <!-- <div class="day">
+                        第 0 天
+                    </div> -->
+                    <div class="addBtn">
+                         <div class="addIcon"></div> 
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    <script>
+    $(document).ready(function(){
+        
+        function addBtn(option){
+            var addConent = $(`<div class="day">${option.text}</div>`)
+            // $()
+            return addConent
+        }
+        var i=0
+        var btn_handle = {
+            dayIndex:7,
+            weekIndex:4,
+            monthIndex:12,
+            yearIndex:2017,
+            btn:$('.addBtn'),
+            /*
+            test = {
+                aa:'1',
+                bb:()=>{console.log(test.aa)}
+                cc:()=>{console.log(this.aa)}
+            }
+            test.bb() // 能打印值
+            test.cc()　　// 不能打印值
+            */
+            btnNode:'<div class="addBtn"><div class="addIcon"></div></div>',
+            dayNode:(content)=>`<div class='day'>第${btn_handle.dayIndex}天</div>${btn_handle.btnNode}`,
+            weekNode:(content)=>`<div class="week"><div class='frame center'>第${btn_handle.weekIndex}周</div>${btn_handle.dayNode()}</div>`,
+            monthNode:(content)=>`<div class='month'><div class="frame month_title">第${btn_handle.monthIndex}月</div>${btn_handle.weekNode()}</div>`,
+            yearNode:(content)=>`<div class="year"><div class="frame year_title">第${btn_handle.yearIndex}年</div>${btn_handle.monthNode()}</div>`,
+            addContent:function(content){
+                var addConent = $(`<div class="day">${content.text}</div>`)
+                // $()
+                return addConent
+            },
+            dayHandle:function(){
+                console.log('--->',this.index)
+                // this.yearNode()
+                // 必须设置初始值，让第一次加载重新创建 addBtn 节点
+                // this.dayIndex=7;
+                // this.weekIndex=4;
+                
+                $('div').delegate('.addBtn','click',function(e){
+                    e.stopPropagation()
+                    var addBtnNode = $('.addBtn')
+                    var dayNodeLen = addBtnNode.siblings('.day').length
+                    // if(dayNodeLen >= 7){
+                    if(this.dayIndex >= 7){   // 为了初始化时候设置成 this.dayIndex == 7,第一次初始化 $('.addBtn')
+                        this.dayIndex = 1
+                        // 新添加一周
+                        // addBtnNode.parents('.week').after(this.weekNode())
+                        this.weekHandle()
+                        addBtnNode.remove()
+                        // return false
+                    }else{
+                        this.dayIndex++
+                        var addObj = this.addContent({text:`第 ${this.dayIndex} 天`})
+                        addBtnNode.before(addObj)
+                    }
+                }.bind(this))
+            },
+            weekHandle:function(){
+                var addBtnNode = $('.addBtn')
+                if( this.weekIndex >= 4 ){
+                    this.weekIndex = 1
+                    // 新添一个月的
+                    this.monthHandle()
+                    addBtnNode.remove()
+                }else{
+                    this.weekIndex++
+                }
+                addBtnNode.parents('.week').before(this.weekNode()) // before/after 修改渲染的顺序，自上而下(after)还是自下而上(before)
+            },
+            monthHandle:function(){
+                var addBtnNode = $('.addBtn')
+                if(this.monthIndex >=2){
+                    this.monthIndex = 1;
+                    // 添加一年的节点
+                    this.yearHandle()
+                    addBtnNode.remove()
+                }else{
+                    this.monthIndex++
+                }
+                addBtnNode.parents('.month').before(this.monthNode()) // before/after 修改渲染的顺序，自上而下(after)还是自下而上(before)
+            },
+            yearHandle:function(){
+                // 特此声明，此处因为原来的节点没有点击按钮，已经无效了,所以删除掉
+                // TODO 解决一年后就会被删除掉                  
+                // TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
+                $('.year').remove()
+                // TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
+                // 添加新的一年
+                $('body').prepend(this.yearNode())
+                this.yearIndex++
+                // 特此声明，此处因为原来的节点没有点击按钮，已经无效了，所以重新渲染一次
+                btn_handle.dayHandle()
+            }
+            
+            
+        }
+        btn_handle.dayHandle()
+    })
+    </script>
+
+    </body>
+</html>
