@@ -63,7 +63,6 @@ li{
 }
 .month{
     width:100%;
-    
 }
 .week{
     width: 100%;
@@ -128,30 +127,30 @@ li{
 
 // 每天的日记录
 .header{
-    height: 0.9rem;
-    line-height: 0.9rem;
     font-size: 0.6rem;
     color: #999;
+    border:1px solid #444;
+    .BR;
     &>*{
         margin-right: 0.5rem;
-        
     }
 }
 #day{
     .center;
     flex-direction: row;
     align-items: flex-start;
+    flex-wrap:wrap;
 }
 
 #content{
     h2{
         color: #444;
     }
-    input{        
+    #input{        
         padding:@pd;
         font-size: 0.5rem;
         .BR;
-        width: 8rem;
+        width: 80%;
         height: 1rem;
         text-align: center;
         border:1px solid #444;
@@ -169,7 +168,7 @@ li{
 }
 #button{
     .center;
-    height: 10rem; // 为什么没有其效果
+    // height: 10rem; // 为什么没有其效果
     width: 100%;
     margin:0.2rem;
     margin-top:1rem; // 解决上面的bug
@@ -243,11 +242,12 @@ li{
             flex-wrap:wrap;
             .time{
                 width: 4rem;
-                flex:1;
+                flex:2;
                 text-align: right;
             }
             .time+span{
                 flex:2;
+                text-align: left;
                 margin-left: 0.3rem;
             }
         }
@@ -255,7 +255,8 @@ li{
 }
 
 .tomatoWork,.recordDaily{
-    max-height: 11rem;
+    // 设置后悔有异常情况
+    // max-height: 11rem;
     width:100%;
     overflow: hidden;
     padding:@pd;
@@ -265,19 +266,22 @@ li{
 .tomatoWork{
     .frame;
     height: auto;
-    flex: 2;
+    // flex: 2;
     flex-direction: column;
     justify-content: center;
     text-align: center;
     position: relative;
+    width:auto;
+    flex:initial;
 }
 .recordDaily{
     .frame;
-    flex: 1;
+    // flex: 1;
     flex-direction: column;
     align-items: flex-start;
     height: auto;
-    
+    width:auto;
+    flex:initial;
     .title{
         width: 100%;
     }
@@ -298,11 +302,11 @@ li{
         .time{
             // display: inline-block;
             width: 4rem;
-            flex:1;
+            flex:1.2;
             text-align: right;
         }
         .time+span{
-            flex:2;
+            flex:1.8;
             margin-left: 0.3rem;
         }
     }

@@ -1,0 +1,424 @@
+<!DOCTYPE>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=0.8, maximum-scale=1.0, user-scalable=no" />
+        <title>番茄工作法&记录日工作</title>
+        <link rel="stylesheet" href="./index.css">
+        <style>
+            body{
+                display: flex;
+                flex-direction: column;
+                flex-wrap: wrap;
+            }
+        </style>
+        <script src='./moment-with-locales.min.js'></script>
+        <script src="./moment-zh-cn.js"></script>
+
+        <script src='./zepto.1.2.0.min.js'></script>
+        <script src='./index.js'></script>
+        
+        <!-- <script type="text/javascript" src="http://sandbox.runjs.cn/uploads/rs/177/610g04mp/digit.js"></script>
+        <script type="text/javascript" src="http://sandbox.runjs.cn/uploads/rs/177/610g04mp/countdown.js"></script> -->
+            
+        <!-- <script type="text/javascript" src="倒计时/digit.js"></script> -->
+        <script type="text/javascript" src="倒计时/control.js"></script>
+    </head>
+    <body>
+        <h1 class='mp0 header'>
+            <span class="title_date">2017年7月24日 11:14:21</span>
+            <span class="title_week">星期三</span>
+            <span class="isWorkDay">上班日</span>  
+        </h1>
+            <div class="tomatoWork">
+                <!-- <div style="height:100px;width:100px;background:#000;"></div> -->
+                <!-- <div style="height:4rem;width:60%;margin:0 auto;">
+                    <canvas id="canvas" style="height:4rem;width:60%;margin:0 auto;">
+                        当前浏览器不支持canvas，请更换浏览器后重试
+                    </canvas> 
+                </div> -->
+                 <canvas id="canvas" style="width:60%;margin:0 auto;">
+                    当前浏览器不支持canvas，请更换浏览器后重试
+                </canvas>  
+                <div id="content">
+                    <h2>番茄任务</h2>
+                    <input id='input' type="text" placeholder="请输入 25 分钟内的任务">
+                    <input id='taskName' type="hidden" value="" >
+                </div>
+                <div id="button">
+                    <div class="pause" data-type='pause'>休息</div>
+                    <div class="start" data-type='start'>开始</div>
+                    <div class="stop" data-type='stop'>停止</div>
+                </div>
+                <div id="tool">
+                    <ul class="toolBtn">
+                        <li class="setting">临时记录</li>
+                        <li class="setting">设置</li>
+                    </ul>
+                    <div class="toolContent">
+                        <div >
+                            
+                            <ul class='on'>
+                                <li><label for="perTime">修改番茄每个任务时间</label><input id='perTime' type="checkbox"></li>
+                                <li><label>修改番茄每个任务时间</label><input id='perTime' type="text"></li>
+                            </ul>
+                            <strong>临时记录</strong>
+                            <ul >
+                                <li>
+                                    <span class="time">2017-7-25 12:00:00</span> 
+                                    <span class="tempRecord start_record">开始了 <span class="taskName">xxxx</span> 任务</span>
+                                </li>
+                                <li>
+                                    <span class="time">2017-7-25 12:25:00</span> 
+                                    <span class="tempRecord complete_record">结束 <span class="taskName"> xxxx  </span> 任务</span>
+                                </li>
+                                <li>
+                                    <span class="time">2017-7-25 12:25:00</span> 
+                                    <span class="tempRecord pause_record">休息 <span class="restTime"> 5min </span> 时间</span>
+                                </li>
+                                <li>
+                                    <span class="time">2017-7-25 12:25:00</span> 
+                                    <span class="tempRecord success_record">恭喜完成了 <span class="taskName"> xxxx  </span> 任务</span>
+                                </li>
+                                
+                            </ul>
+                        </div>
+                        <div style="display:none;">一些番茄法的设置方法 https://alloyteam.github.io/AlloyTimer/ </div>
+                        
+                    </div>
+                </div>
+            </div>
+             <div class="recordDaily">
+                <div class="title">
+                    <span class="title_day ">7月24号</span>
+                    <span class="title_week">周三</span>
+                    记录
+                </div>
+                <div class="content">
+                    <h3>当前记录的历史记录</h3>
+                    <p id='sql_result'>查询记录条数: <span ></span> </p>
+                    <ul >
+                        <li>
+                            <span class="time">2017-7-25 12:00:00</span> 
+                            <span class="start_record">开始了 <span class="taskName">xxxx</span> 任务</span>
+                        </li>
+                        <li>
+                            <span class="time">2017-7-25 12:25:00</span> 
+                            <span class="complete_record">结束 <span class="taskName"> xxxx  </span> 任务</span>
+                        </li>
+                        <li>
+                            <span class="time">2017-7-25 12:25:00</span> 
+                            <span class="pause_record">休息 <span class="restTime"> 5min </span> 时间</span>
+                        </li>
+                        <li>
+                            <span class="time">2017-7-25 12:25:00</span> 
+                            <span class="success_record">恭喜完成了 <span class="taskName"> xxxx  </span> 任务</span>
+                        </li>
+                    </ul>
+                </div>
+            </div> 
+        <!-- <div id='day'>
+        </div> -->
+    </body>
+    <script>
+
+    $(document).ready(function(){
+        window.a = 'test'
+        Tomato_method = {
+            hiddenInput:$('#taskName'),
+            inputObj:$('#input'),
+            tempRecord:$('.toolContent ul'),
+            historyRecord:$('.recordDaily ul'),
+            canvas:document.getElementById("canvas"),
+            titleDate_nodeObj:$('.title_date'),
+            titleDay_nodeObj:$('.title_day'),
+            titleWeek_nodeObj:$('.title_week'),
+            isWorkDay_nodeObj:$('.isWorkDay'),
+            TomatoDB_index:0,
+            nowTime:()=>moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),
+            taskName:function(){
+                return this.hiddenInput.val()
+            },
+            setBackgroundGray:function(){
+                $('#button div').on('click',function(){
+                    // alert(Tomato_method.inputObj.val)
+                    if($(this).data('type') == 'start' && Tomato_method.inputObj.val() == ''){
+                        return
+                    }
+                    $(this).addClass('on').siblings('div').removeClass('on')
+                    $('head title').text(Tomato_method.taskName())
+                })
+            },
+            
+            swapUl:(target)=>{
+                $('.toolBtn .setting').on('click',function(){
+                    var index = $(this).index()
+                    console.log({index})
+                    $('.toolContent ul').eq(index).addClass('on').siblings('ul').removeClass('on');
+                    $('head title').text(Tomato_method.taskName())
+                })
+            },
+            setAllTime:function(){
+                var datetime = moment(new Date())
+                var fulltime = datetime.format("YYYY年MM月DD日 HH:mm:ss")
+                var weekArr = ['一','二','三','四','五','六','七']
+                var week_index = datetime._d.getDay()-1
+                isWorkDay = week_index>=6 ? '休息日' : '工作日'
+                
+                this.titleDate_nodeObj.text(fulltime);
+                this.titleWeek_nodeObj.text(`星期${weekArr[week_index]}`)
+                
+            },
+            getInputValue:function(){
+                // console.log({'that':this.a}) // test
+                // if(this.inputObj.val()!=''){
+                //     this.hiddenInput.val(event.target.value)
+                // }
+                this.hiddenInput.val(event.target.value)
+                this.hiddenInput.val(event.target.value)
+                document.getElementById('input').oninput = (event)=>{
+                    // console.log({this:this}) // window
+                    
+                }
+            },
+            refreshLog:function(type){
+                var node = this.logNode({
+                    type:type,
+                    datetime:this.nowTime(),
+                    text:this.taskName()
+                })
+                // 更新临时记录
+                this.tempRecord.prepend(node)
+                // 更新历史记录
+                this.historyRecord.prepend(node)
+                // 数据操作
+                Tomato_method.createSQL()
+            },
+            type_flg:null,
+            start:function(minitues){
+                var type = 'start'
+                var startNode = $('#button .start')
+                startNode.on('click',()=>{
+                    if($('#input').val() == ''){
+                        alert('请设置需要完成的任务')
+                        return 
+                    }else{
+                        this.hiddenInput.val(this.inputObj.val())
+                    }
+                    if (this.type_flg != type){
+                        this.type_flg = type
+                    }else{
+                        return false
+                    }
+                    console.log(this.type_flg)
+                    
+                    // 更新 记录
+                    this.refreshLog(type)
+                    // 倒计时
+                    Tomato_method.countDown(minitues||25);
+                    setTimeout(function(){this.refreshLog('success');alert('设置任务已完成');},minitues*60*1000)
+                })
+            },
+            pause:function(minitues){
+                var type = 'pause'
+                var pauseNode = $('#button .pause');
+                pauseNode.on('click',function(){
+                    if (Tomato_method.type_flg != type){
+                        Tomato_method.type_flg = type
+                    }else{
+                        return
+                    }
+                    Tomato_method.hiddenInput.val(`休息 ${minitues} 分钟`)
+                    Tomato_method.countDown(minitues||5)
+                    Tomato_method.refreshLog(type)
+                    setTimeout(function(){alert('设置任务已完成')},minitues*60*1000)
+                })
+            },
+            stop:function(minitues){
+                var type = 'stop'
+                // TODO 有bug:输入内容，但不点击开始，点击停止，也会被记录，做判断下
+                var stopNode = $('#button .stop');
+                stopNode.on('click',()=>{
+                    if (this.type_flg != type){
+                        this.type_flg = type
+                    }else{
+                        return false
+                    }
+                    Tomato_method.countDown(minitues||0);
+                    this.refreshLog(type)
+                })
+            },
+            logNode:(option)=>{
+                if(option.text == ''){
+                    return
+                }
+                var option = {
+                    type:option.type,
+                    datetime:option.datetime,
+                    text:option.text
+                }
+                
+                var node
+                switch(option.type){
+                    case('success'):
+                        node = `<li>
+                            <span class="time">${option.datetime}</span> 
+                            <span class="success_record">谢谢你坚持的完成了 <span class="taskName"> ${option.text}  </span> 任务</span>
+                        </li>`
+                        break;
+                    case('pause'):
+                        // <span class="pause_record">休息 <span class="restTime"> ${option.text}  </span> 时间</span>
+                        node = `<li>
+                            <span class="time">${option.datetime}</span> 
+                            <span class="pause_record"> ${option.text}</span>
+                        </li>`
+                        break;
+                    case('start'):
+                        node = `<li>
+                            <span class="time">${option.datetime}</span> 
+                            <span class="start_record">开始了 <span class="taskName">  ${option.text} </span> 任务</span>
+                        </li>`
+                        break;
+                    case('stop'):
+                        node = `<li>
+                            <span class="time">${option.datetime}</span> 
+                            <span class="complete_record">结束 <span class="taskName"> ${option.text}  </span> 任务</span>
+                        </li>`
+                        break;
+                }
+                
+                return node
+            },
+            countDown:function(minitues){
+                if(!minitues){
+                    // $('#canvas').css('display','none')
+                    // return
+                    minitues = 0
+                }
+
+                endTime=new Date();
+                endTime=endTime.getTime()+1000*60* minitues;
+                WINDOW_HEIGHT=document.documentElement.clientHeight||document.body.clientHeight ;
+                //要前台的body撑起来，否则取不到值,为解决ff兼容性的问题，最好把document.documentElement.clientHeight写在前面
+                WINDOW_WIDTH=document.body.clientWidth||document.documentElement.clientWidth;
+                MARGIN_LEFT=Math.round(WINDOW_WIDTH/10);
+                RADIUS=Math.round(WINDOW_WIDTH*4/5/108)-1;//还记得108怎么得来的吗？
+                // MARGIN_TOP=Math.round(WINDOW_HEIGHT/10); // 控制 倒计时 数字距离顶部的位置
+                MARGIN_TOP=Math.round(30); // 控制 倒计时 数字距离顶部的位置
+
+                var canvas = this.canvas
+                // var canvas=document.getElementById("canvas");
+                var context=canvas.getContext("2d");
+                // canvas.width=WINDOW_WIDTH;
+                // canvas.height=WINDOW_HEIGHT;
+                WINDOW_HEIGHT = WINDOW_HEIGHT/3; // 控制数字掉落下来的圆球到地板的距离 
+                canvas.width=WINDOW_WIDTH;
+                canvas.height=WINDOW_HEIGHT;
+                context.clearRect(0,0,WINDOW_WIDTH,WINDOW_HEIGHT);
+
+                curShowTimeSeconds=getCurrentShowTimeSeconds();
+
+                setInterval(
+                    function(){
+                        render(context);
+                        update();
+                    } ,
+                    50
+                );
+            },
+            saveLocalStorage:function(option){
+                localStorage.setItem()
+            },
+            createSQL:function(){
+                var db = openDatabase('TomatoDB', '1.0', 'Tomato method DB', 2 * 1024 * 1024);
+                // this.TomatoDB_index = localStorage.getItem('TomatoDB_index')
+                // console.log('当前webSQL查询有:',Tomato_method.TomatoDB_index)
+                
+                // localStorage.setItem('TomatoDB_index',Tomato_method.TomatoDB_index)
+                // this.TomatoDB_index = localStorage.getItem('TomatoDB_index')
+                // Tomato_method.TomatoDB_index++
+                db.transaction(function (tx) {
+                    // auto_increment
+                    tx.executeSql('CREATE TABLE IF NOT EXISTS Tomato (id unique, datetime, clickType, task)');
+                    tx.executeSql('INSERT INTO Tomato (datetime, clickType, task) VALUES (?,?,?)',[Tomato_method.nowTime(),Tomato_method.type_flg,Tomato_method.taskName()]);
+                    // tx.executeSql('INSERT INTO Tomato (id, datetime, clickType, task) VALUES (1, "菜鸟教程")');
+                });
+            },
+            querySQL:function(option){
+                /*
+                option = {
+                    query:'clickType', // 省略，会查询全部
+                    result:'task'
+                    fn:callback
+                }
+                */ 
+                var db = openDatabase('TomatoDB', '1.0', 'Tomato method DB', 2 * 1024 * 1024);
+                
+                db.transaction(function (tx) {
+                    tx.executeSql(`SELECT ${ option.query|| '*'} FROM Tomato`, [], function (tx, results) {
+                        var len = results.rows.length, i;
+                        msg = "<span>" + len + "</span>";
+                        document.getElementById('sql_result').innerHTML +=  msg;
+                        // console.log(results.rows)
+                        if(option.fn){
+                            option.fn(results.rows)
+                            // Array.from(results.rows) 转成数组处理
+                            // Array.from(results.rows).forEach(Tomato_method.renderHistory)
+                        }
+                        // for (i = 0; i < len; i++){
+                        //     console.log(results.rows.item(i).task );
+                        // }
+                    }, null);
+                });
+
+            },
+            renderHistory:function(data){
+                // console.log('query result:',data)
+                // var dd,node
+                for(var d=0;d<data.length;d++){
+                    // console.log(data.item(d).datetime)
+                    var dd = data.item(d)
+                    var node = Tomato_method.logNode({
+                        type:dd.clickType,
+                        datetime:dd.datetime,
+                        text:dd.task
+                    })
+                    // console.log({dd})
+                    // 更新历史记录
+                    Tomato_method.historyRecord.prepend(node)
+                }
+            },
+            init:()=>{
+                // console.log(moment(new Date()).format("YYYY-MM-DD HH:mm:ss"))
+                console.log('test time:',Tomato_method.nowTime())
+                // 临时记录
+                Tomato_method.swapUl()
+                // 暂停、开始、停止 按钮操作
+                Tomato_method.start(25)
+                Tomato_method.pause(5)
+                Tomato_method.stop(0)
+                // 实时监测 input 输入值
+                Tomato_method.getInputValue();
+                // 暂停、开始、停止 按钮 3个公共的点击事件
+                Tomato_method.setBackgroundGray();
+                // 初始化显示倒计时
+                Tomato_method.countDown(0)
+                // 设置页面上的时间
+                var fulltime = moment().format("YYYY年MM月DD日")
+                Tomato_method.titleDay_nodeObj.text(fulltime)
+                Tomato_method.setAllTime()
+                setInterval(function(){
+                    Tomato_method.setAllTime()
+                },1000)                
+                // 数据库操作
+                // Tomato_method.createSQL()
+                Tomato_method.querySQL({query:'*',fn:Tomato_method.renderHistory})
+            }
+        }
+        Tomato_method.init()
+
+    })
+    </script>
+
+    </body>
+</html>

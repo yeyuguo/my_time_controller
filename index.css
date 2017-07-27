@@ -118,10 +118,10 @@ li {
   align-items: center;
 }
 .header {
-  height: 0.9rem;
-  line-height: 0.9rem;
   font-size: 0.6rem;
   color: #999;
+  border: 1px solid #444;
+  border-radius: 0.1rem;
 }
 .header > * {
   margin-right: 0.5rem;
@@ -132,15 +132,16 @@ li {
   align-items: center;
   flex-direction: row;
   align-items: flex-start;
+  flex-wrap: wrap;
 }
 #content h2 {
   color: #444;
 }
-#content input {
+#content #input {
   padding: 0.2rem 0.1rem;
   font-size: 0.5rem;
   border-radius: 0.1rem;
-  width: 8rem;
+  width: 80%;
   height: 1rem;
   text-align: center;
   border: 1px solid #444;
@@ -160,7 +161,6 @@ li {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 10rem;
   width: 100%;
   margin: 0.2rem;
   margin-top: 1rem;
@@ -279,16 +279,16 @@ li {
 }
 #tool .toolContent li .time {
   width: 4rem;
-  flex: 1;
+  flex: 2;
   text-align: right;
 }
 #tool .toolContent li .time + span {
   flex: 2;
+  text-align: left;
   margin-left: 0.3rem;
 }
 .tomatoWork,
 .recordDaily {
-  max-height: 11rem;
   width: 100%;
   overflow: hidden;
   padding: 0.2rem 0.1rem;
@@ -303,11 +303,12 @@ li {
   display: flex;
   flex: 1;
   height: auto;
-  flex: 2;
   flex-direction: column;
   justify-content: center;
   text-align: center;
   position: relative;
+  width: auto;
+  flex: initial;
 }
 .recordDaily {
   width: 1rem;
@@ -322,6 +323,8 @@ li {
   flex-direction: column;
   align-items: flex-start;
   height: auto;
+  width: auto;
+  flex: initial;
 }
 .recordDaily .title {
   width: 100%;
@@ -343,11 +346,11 @@ li {
 }
 .recordDaily .content .time {
   width: 4rem;
-  flex: 1;
+  flex: 1.2;
   text-align: right;
 }
 .recordDaily .content .time + span {
-  flex: 2;
+  flex: 1.8;
   margin-left: 0.3rem;
 }
 .clear {
