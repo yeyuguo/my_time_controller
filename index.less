@@ -1,3 +1,4 @@
+
 html{
     // font-size: 62.5%;
     // 目标值 1rem / 16px = xxx == 1rem;
@@ -6,7 +7,16 @@ html{
 body{
     // font-size: 0.4rem; // 移动端好看
     // font-size: 0.3rem; // 移动 PC 适中 
+    width: 100%;
     font-size: 0.28rem; // PC端字体 14px 
+    margin: 0.1rem 0;
+}
+ul,li{
+    padding: 0;
+    margin: 0;
+}
+li{
+    list-style: none;
 }
 
 
@@ -16,6 +26,7 @@ body{
 .BR{
     border-radius: 0.1rem;
 }
+
 
 .classFrame{
     align-items: center;
@@ -36,6 +47,7 @@ body{
     justify-content: center;
     flex: 1;
 }
+
 .transition{
     transition: 0.3s all;
     cursor: pointer;
@@ -44,6 +56,7 @@ body{
     transform: rotateY(-360deg);
     transition:transform 1.5s ease-out;
 }
+
 
 .year{
     width:100%;
@@ -107,4 +120,220 @@ body{
     height: 1rem;
     display: flex;
     align-items: center;
+}
+
+
+
+
+
+// 每天的日记录
+.header{
+    height: 0.9rem;
+    line-height: 0.9rem;
+    font-size: 0.6rem;
+    color: #999;
+    &>*{
+        margin-right: 0.5rem;
+        
+    }
+}
+#day{
+    .center;
+    flex-direction: row;
+    align-items: flex-start;
+}
+
+#content{
+    h2{
+        color: #444;
+    }
+    input{        
+        padding:@pd;
+        font-size: 0.5rem;
+        .BR;
+        width: 8rem;
+        height: 1rem;
+        text-align: center;
+        border:1px solid #444;
+    }
+}
+.button{
+    .BR;
+    @num:0.8rem;
+    height: @num;
+    width: @num;
+    padding: 0.2rem;
+    cursor: pointer;
+    margin-right: 0.2rem;
+    .center;
+}
+#button{
+    .center;
+    height: 10rem; // 为什么没有其效果
+    width: 100%;
+    margin:0.2rem;
+    margin-top:1rem; // 解决上面的bug
+    color:#fff;
+    .scale{
+        transform: scale(1.6);
+        .transition;
+    }
+    div.on{
+        background: #eee;
+        color:#000;
+        .scale;
+    }
+    &> div:nth-child(2).on{
+        transform: scale(1.2);
+    }
+    .pause{
+        .button;
+        background-image: linear-gradient(to bottom, #fbb450, #f89406);
+        &:hover{
+            // background-color: #f89406;
+            .scale;
+        }
+    }
+    .start{
+        .button;
+        background-image: linear-gradient(to bottom, #0088cc, #0044cc);
+        padding: 0.4rem;
+        &:hover{
+            // background-color: #0044cc;
+            transform: scale(1.2);
+        }
+    }
+    .stop{
+        .button;
+        background-image: linear-gradient(to bottom, #ee5f5b, #bd362f);
+        &:hover{
+            // background-color: #bd362f;
+            .scale;
+        }
+    }
+    .pause,.start,.stop{
+        margin-right: .5rem;
+    }
+}
+#tool{
+    margin-top: 1rem;
+    .toolBtn{
+        .center;
+        li{
+            .button;
+            width: 1.5rem;
+            height: 0.2rem;
+            background-image: -webkit-linear-gradient(top, #5bc0de, #2f96b4);
+        }
+    }
+    .toolContent{
+        margin-top: 0.2rem;
+        ul{
+            height: 6.2rem;
+            overflow: auto;
+            &.on{
+                display: none;
+            }
+        }
+        li{
+            .center;
+            margin-bottom: 0.3rem;
+            flex-wrap:wrap;
+            .time{
+                width: 4rem;
+                flex:1;
+                text-align: right;
+            }
+            .time+span{
+                flex:2;
+                margin-left: 0.3rem;
+            }
+        }
+    }
+}
+
+.tomatoWork,.recordDaily{
+    max-height: 11rem;
+    overflow: hidden;
+    padding:@pd;
+}
+
+
+.tomatoWork{
+    .frame;
+    height: auto;
+    flex: 2;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    position: relative;
+}
+.recordDaily{
+    .frame;
+    flex: 1;
+    flex-direction: column;
+    align-items: flex-start;
+    height: auto;
+    
+    .title{
+        width: 100%;
+    }
+    .content{
+        ul{
+            overflow: auto;
+            max-height: 10rem;
+            
+        }
+        
+        li{
+            .center;
+            justify-content: flex-start;
+            flex-wrap:wrap;
+            margin-bottom: 0.3rem;
+        }
+        .time{
+            // display: inline-block;
+            width: 4rem;
+            flex:1;
+            text-align: right;
+        }
+        .time+span{
+            flex:2;
+            margin-left: 0.3rem;
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+// ======================================
+
+
+.clear{
+    padding: 0;
+    margin: 0;
+    border: none;
+    clear: both;
+}
+.mp0{
+    
+    padding: 0;
+    width: 90%;
+    margin: 0 auto;
+    text-align: center;
+}
+
+
+// 倒计时
+#canvas{ 
+    display: block;
 }

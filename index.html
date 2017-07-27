@@ -1,7 +1,9 @@
 <!DOCTYPE>
 <html>
     <head>
+        <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=0.8, maximum-scale=1.0, user-scalable=no" />
+        <title>每天日记录</title>
         <link rel="stylesheet" href="./index.css">
         <script src='./zepto.1.2.0.min.js'></script>
         <script src='./index.js'></script>
@@ -67,7 +69,7 @@
             dayNode:(content)=>`<div class='day'>第${btn_handle.dayIndex}天</div>${btn_handle.btnNode}`,
             weekNode:(content)=>`<div class="week"><div class='frame center'>第${btn_handle.weekIndex}周</div>${btn_handle.dayNode()}</div>`,
             monthNode:(content)=>`<div class='month'><div class="frame month_title">第${btn_handle.monthIndex}月</div>${btn_handle.weekNode()}</div>`,
-            yearNode:(content)=>`<div class="year"><div class="frame year_title">第${btn_handle.yearIndex}年</div>${btn_handle.monthNode()}</div>`,
+            yearNode:(content)=>`<div class="year"><div class="frame year_title mp0">第${btn_handle.yearIndex}年</div>${btn_handle.monthNode()}</div>`,
             addContent:function(content){
                 var addConent = $(`<div class="day">${content.text}</div>`)
                 // $()
@@ -135,8 +137,6 @@
                 // 特此声明，此处因为原来的节点没有点击按钮，已经无效了，所以重新渲染一次
                 btn_handle.dayHandle()
             }
-            
-            
         }
         btn_handle.dayHandle()
     })
