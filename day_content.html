@@ -85,7 +85,7 @@
                 </div>
                 <div class="content">
                     <h3>当前记录的历史记录</h3>
-                    
+                    <p id='sql_result'>查询记录条数: <span ></span> </p>
                     <ul >
                         <li>
                             <span class="time">2017-7-25 12:00:00</span> 
@@ -122,7 +122,11 @@
             titleDay_nodeObj:$('.title_day'),
             titleWeek_nodeObj:$('.title_week'),
             isWorkDay_nodeObj:$('.isWorkDay'),
+            TomatoDB_index:0,
             nowTime:()=>moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),
+            taskName:function(){
+                return this.hiddenInput.val()
+            },
             setBackgroundGray:function(){
                 $('#button div').on('click',function(){
                     // alert(Tomato_method.inputObj.val)
@@ -130,9 +134,10 @@
                         return
                     }
                     $(this).addClass('on').siblings('div').removeClass('on')
+                    $('head title').text(Tomato_method.taskName())
                 })
             },
-            taskName:()=> $('#taskName').val(),
+            
             swapUl:(target)=>{
                 $('.toolBtn .setting').on('click',function(){
                     var index = $(this).index()
@@ -144,7 +149,6 @@
             setAllTime:function(){
                 var datetime = moment(new Date())
                 var fulltime = datetime.format("YYYY年MM月DD日 HH:mm:ss")
-                console.log(datetime._d.getDay())
                 var weekArr = ['一','二','三','四','五','六','七']
                 var week_index = datetime._d.getDay()-1
                 isWorkDay = week_index>=6 ? '休息日' : '工作日'
@@ -153,12 +157,16 @@
                 this.titleWeek_nodeObj.text(`星期${weekArr[week_index]}`)
                 
             },
-            type_flg:null,
             getInputValue:function(){
-                // console.log({'that':this.a}) // test 
+                // console.log({'that':this.a}) // test
+                // if(this.inputObj.val()!=''){
+                //     this.hiddenInput.val(event.target.value)
+                // }
+                this.hiddenInput.val(event.target.value)
+                this.hiddenInput.val(event.target.value)
                 document.getElementById('input').oninput = (event)=>{
                     // console.log({this:this}) // window
-                    this.hiddenInput.val(event.target.value)
+                    
                 }
             },
             refreshLog:function(type){
@@ -171,21 +179,27 @@
                 this.tempRecord.prepend(node)
                 // 更新历史记录
                 this.historyRecord.prepend(node)
+                // 数据操作
+                Tomato_method.createSQL()
             },
+            type_flg:null,
             start:function(minitues){
                 var type = 'start'
                 var startNode = $('#button .start')
                 startNode.on('click',()=>{
+                    if($('#input').val() == ''){
+                        alert('请设置需要完成的任务')
+                        return 
+                    }else{
+                        this.hiddenInput.val(this.inputObj.val())
+                    }
                     if (this.type_flg != type){
                         this.type_flg = type
                     }else{
                         return false
                     }
                     console.log(this.type_flg)
-                    if($('#input').val() == ''){
-                        alert('请设置需要完成的任务')
-                        return 
-                    }
+                    
                     // 更新 记录
                     this.refreshLog(type)
                     // 倒计时
@@ -236,30 +250,31 @@
                 switch(option.type){
                     case('success'):
                         node = `<li>
-                            <span class="time"> ${option.datetime} </span> 
+                            <span class="time">${option.datetime}</span> 
                             <span class="success_record">谢谢你坚持的完成了 <span class="taskName"> ${option.text}  </span> 任务</span>
                         </li>`
                         break;
                     case('pause'):
                         // <span class="pause_record">休息 <span class="restTime"> ${option.text}  </span> 时间</span>
                         node = `<li>
-                            <span class="time"> ${option.datetime} </span> 
+                            <span class="time">${option.datetime}</span> 
                             <span class="pause_record"> ${option.text}</span>
                         </li>`
                         break;
                     case('start'):
                         node = `<li>
-                            <span class="time"> ${option.datetime} </span> 
+                            <span class="time">${option.datetime}</span> 
                             <span class="start_record">开始了 <span class="taskName">  ${option.text} </span> 任务</span>
                         </li>`
                         break;
                     case('stop'):
                         node = `<li>
-                            <span class="time">  ${option.datetime} </span> 
+                            <span class="time">${option.datetime}</span> 
                             <span class="complete_record">结束 <span class="taskName"> ${option.text}  </span> 任务</span>
                         </li>`
                         break;
                 }
+                
                 return node
             },
             countDown:function(minitues){
@@ -308,6 +323,68 @@
                     50
                 );
             },
+            saveLocalStorage:function(option){
+                localStorage.setItem()
+            },
+            createSQL:function(){
+                var db = openDatabase('TomatoDB', '1.0', 'Tomato method DB', 2 * 1024 * 1024);
+                // this.TomatoDB_index = localStorage.getItem('TomatoDB_index')
+                // console.log('当前webSQL查询有:',Tomato_method.TomatoDB_index)
+                
+                // localStorage.setItem('TomatoDB_index',Tomato_method.TomatoDB_index)
+                // this.TomatoDB_index = localStorage.getItem('TomatoDB_index')
+                // Tomato_method.TomatoDB_index++
+                db.transaction(function (tx) {
+                    // auto_increment
+                    tx.executeSql('CREATE TABLE IF NOT EXISTS Tomato (id unique, datetime, clickType, task)');
+                    tx.executeSql('INSERT INTO Tomato (datetime, clickType, task) VALUES (?,?,?)',[Tomato_method.nowTime(),Tomato_method.type_flg,Tomato_method.taskName()]);
+                    // tx.executeSql('INSERT INTO Tomato (id, datetime, clickType, task) VALUES (1, "菜鸟教程")');
+                });
+            },
+            querySQL:function(option){
+                /*
+                option = {
+                    query:'clickType',
+                    result:'task'
+                    fn:callback
+                }
+                */ 
+                var db = openDatabase('TomatoDB', '1.0', 'Tomato method DB', 2 * 1024 * 1024);
+                
+                db.transaction(function (tx) {
+                    tx.executeSql(`SELECT ${ option.query|| '*'} FROM Tomato`, [], function (tx, results) {
+                        var len = results.rows.length, i;
+                        msg = "<span>" + len + "</span>";
+                        document.getElementById('sql_result').innerHTML +=  msg;
+                        // console.log(results.rows)
+                        if(option.fn){
+                            option.fn(results.rows)
+                            // Array.from(results.rows) 转成数组处理
+                            // Array.from(results.rows).forEach(Tomato_method.renderHistory)
+                        }
+                        // for (i = 0; i < len; i++){
+                        //     console.log(results.rows.item(i).task );
+                        // }
+                    }, null);
+                });
+
+            },
+            renderHistory:function(data){
+                // console.log('query result:',data)
+                // var dd,node
+                for(var d=0;d<data.length;d++){
+                    // console.log(data.item(d).datetime)
+                    var dd = data.item(d)
+                    var node = Tomato_method.logNode({
+                        type:dd.clickType,
+                        datetime:dd.datetime,
+                        text:dd.task
+                    })
+                    console.log({dd})
+                    // 更新历史记录
+                    Tomato_method.historyRecord.prepend(node)
+                }
+            },
             init:()=>{
                 // console.log(moment(new Date()).format("YYYY-MM-DD HH:mm:ss"))
                 console.log('test time:',Tomato_method.nowTime())
@@ -325,8 +402,10 @@
                 Tomato_method.setAllTime()
                 setInterval(function(){
                     Tomato_method.setAllTime()
-                },1000)
-                
+                },1000)                
+                // 数据库操作
+                // Tomato_method.createSQL()
+                Tomato_method.querySQL({query:'*',fn:Tomato_method.renderHistory})
             }
         }
         Tomato_method.init()

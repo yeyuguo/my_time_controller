@@ -213,6 +213,8 @@ li {
 }
 #button .start:hover {
   transform: scale(1.2);
+  transition: 0.3s all;
+  cursor: pointer;
 }
 #button .stop {
   border-radius: 0.1rem;
@@ -287,6 +289,7 @@ li {
 .tomatoWork,
 .recordDaily {
   max-height: 11rem;
+  width: 100%;
   overflow: hidden;
   padding: 0.2rem 0.1rem;
 }
@@ -321,6 +324,9 @@ li {
   height: auto;
 }
 .recordDaily .title {
+  width: 100%;
+}
+.recordDaily .content {
   width: 100%;
 }
 .recordDaily .content ul {
