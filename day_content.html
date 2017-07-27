@@ -19,9 +19,9 @@
     </head>
     <body>
         <h1 class='frame mp0 header'>
-            <span class="title_date">2017年7月24日</span>
+            <span class="title_date">2017年7月24日 11:14:21</span>
             <span class="title_week">星期三</span>
-            <span class="isWork">上班日</span>  
+            <span class="isWorkDay">上班日</span>  
         </h1>
         <div id='day'>
             <div class="tomatoWork">
@@ -35,9 +35,9 @@
                     <input id='taskName' type="hidden" value="" >
                 </div>
                 <div id="button">
-                    <div class="pause">休息</div>
-                    <div class="start">开始</div>
-                    <div class="stop">停止</div>
+                    <div class="pause" data-type='pause'>休息</div>
+                    <div class="start" data-type='start'>开始</div>
+                    <div class="stop" data-type='stop'>停止</div>
                 </div>
                 <div id="tool">
                     <ul class="toolBtn">
@@ -54,19 +54,19 @@
                             <strong>临时记录</strong>
                             <ul >
                                 <li>
-                                    <em class="time">2017年7月25日 12:00:00</em> 
+                                    <span class="time">2017-7-25 12:00:00</span> 
                                     <span class="tempRecord start_record">开始了 <span class="taskName">xxxx</span> 任务</span>
                                 </li>
                                 <li>
-                                    <em class="time">2017年7月25日 12:25:00</em> 
+                                    <span class="time">2017-7-25 12:25:00</span> 
                                     <span class="tempRecord complete_record">结束 <span class="taskName"> xxxx  </span> 任务</span>
                                 </li>
                                 <li>
-                                    <em class="time">2017年7月25日 12:25:00</em> 
+                                    <span class="time">2017-7-25 12:25:00</span> 
                                     <span class="tempRecord pause_record">休息 <span class="restTime"> 5min </span> 时间</span>
                                 </li>
                                 <li>
-                                    <em class="time">2017年7月25日 12:25:00</em> 
+                                    <span class="time">2017-7-25 12:25:00</span> 
                                     <span class="tempRecord success_record">恭喜完成了 <span class="taskName"> xxxx  </span> 任务</span>
                                 </li>
                                 
@@ -79,28 +79,28 @@
             </div>
              <div class="recordDaily">
                 <div class="title">
-                    <span class="title_date">7月24号</span>
+                    <span class="title_day ">7月24号</span>
                     <span class="title_week">周三</span>
                     记录
                 </div>
                 <div class="content">
-                    <h3>当天任务记录</h3>
+                    <h3>当前记录的历史记录</h3>
                     
                     <ul >
                         <li>
-                            <em class="time">2017年7月25日 12:00:00</em> 
+                            <span class="time">2017-7-25 12:00:00</span> 
                             <span class="start_record">开始了 <span class="taskName">xxxx</span> 任务</span>
                         </li>
                         <li>
-                            <em class="time">2017年7月25日 12:25:00</em> 
+                            <span class="time">2017-7-25 12:25:00</span> 
                             <span class="complete_record">结束 <span class="taskName"> xxxx  </span> 任务</span>
                         </li>
                         <li>
-                            <em class="time">2017年7月25日 12:25:00</em> 
+                            <span class="time">2017-7-25 12:25:00</span> 
                             <span class="pause_record">休息 <span class="restTime"> 5min </span> 时间</span>
                         </li>
                         <li>
-                            <em class="time">2017年7月25日 12:25:00</em> 
+                            <span class="time">2017-7-25 12:25:00</span> 
                             <span class="success_record">恭喜完成了 <span class="taskName"> xxxx  </span> 任务</span>
                         </li>
                     </ul>
@@ -114,14 +114,21 @@
         window.a = 'test'
         Tomato_method = {
             hiddenInput:$('#taskName'),
+            inputObj:$('#input'),
             tempRecord:$('.toolContent ul'),
             historyRecord:$('.recordDaily ul'),
+            canvas:document.getElementById("canvas"),
+            titleDate_nodeObj:$('.title_date'),
+            titleDay_nodeObj:$('.title_day'),
+            titleWeek_nodeObj:$('.title_week'),
+            isWorkDay_nodeObj:$('.isWorkDay'),
             nowTime:()=>moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),
             setBackgroundGray:function(){
                 $('#button div').on('click',function(){
-                    // if($(this).text() == '开始'){
-                    //     return false;
-                    // }
+                    // alert(Tomato_method.inputObj.val)
+                    if($(this).data('type') == 'start' && Tomato_method.inputObj.val() == ''){
+                        return
+                    }
                     $(this).addClass('on').siblings('div').removeClass('on')
                 })
             },
@@ -131,12 +138,22 @@
                     var index = $(this).index()
                     console.log({index})
                     $('.toolContent ul').eq(index).addClass('on').siblings('ul').removeClass('on');
-                    $('head title').text(this.taskName())
+                    $('head title').text(Tomato_method.taskName())
                 })
             },
-            setAllTime:()=>{
-
+            setAllTime:function(){
+                var datetime = moment(new Date())
+                var fulltime = datetime.format("YYYY年MM月DD日 HH:mm:ss")
+                console.log(datetime._d.getDay())
+                var weekArr = ['一','二','三','四','五','六','七']
+                var week_index = datetime._d.getDay()-1
+                isWorkDay = week_index>=6 ? '休息日' : '工作日'
+                
+                this.titleDate_nodeObj.text(fulltime);
+                this.titleWeek_nodeObj.text(`星期${weekArr[week_index]}`)
+                
             },
+            type_flg:null,
             getInputValue:function(){
                 // console.log({'that':this.a}) // test 
                 document.getElementById('input').oninput = (event)=>{
@@ -156,78 +173,109 @@
                 this.historyRecord.prepend(node)
             },
             start:function(minitues){
+                var type = 'start'
                 var startNode = $('#button .start')
-                
                 startNode.on('click',()=>{
-                    if(this.taskName() == ''){
+                    if (this.type_flg != type){
+                        this.type_flg = type
+                    }else{
+                        return false
+                    }
+                    console.log(this.type_flg)
+                    if($('#input').val() == ''){
                         alert('请设置需要完成的任务')
                         return 
                     }
                     // 更新 记录
-                    this.refreshLog('start')
+                    this.refreshLog(type)
                     // 倒计时
                     Tomato_method.countDown(minitues||25);
                     setTimeout(function(){this.refreshLog('success');alert('设置任务已完成');},minitues*60*1000)
                 })
             },
-            pause:(minitues)=>{
+            pause:function(minitues){
+                var type = 'pause'
                 var pauseNode = $('#button .pause');
                 pauseNode.on('click',function(){
+                    if (Tomato_method.type_flg != type){
+                        Tomato_method.type_flg = type
+                    }else{
+                        return
+                    }
+                    Tomato_method.hiddenInput.val(`休息 ${minitues} 分钟`)
                     Tomato_method.countDown(minitues||5)
+                    Tomato_method.refreshLog(type)
                     setTimeout(function(){alert('设置任务已完成')},minitues*60*1000)
                 })
             },
             stop:function(minitues){
+                var type = 'stop'
                 // TODO 有bug:输入内容，但不点击开始，点击停止，也会被记录，做判断下
-                debugger
                 var stopNode = $('#button .stop');
                 stopNode.on('click',()=>{
+                    if (this.type_flg != type){
+                        this.type_flg = type
+                    }else{
+                        return false
+                    }
                     Tomato_method.countDown(minitues||0);
-                    this.refreshLog('stop')
+                    this.refreshLog(type)
                 })
             },
             logNode:(option)=>{
+                if(option.text == ''){
+                    return
+                }
                 var option = {
                     type:option.type,
                     datetime:option.datetime,
-                    text:option.text ||'开发API功能'
+                    text:option.text
                 }
+                
                 var node
                 switch(option.type){
                     case('success'):
                         node = `<li>
-                            <em class="time"> ${option.datetime} </em> 
-                            <span class="success_record">恭喜你完整的完成了 <span class="taskName"> ${option.text}  </span> 任务</span>
+                            <span class="time"> ${option.datetime} </span> 
+                            <span class="success_record">谢谢你坚持的完成了 <span class="taskName"> ${option.text}  </span> 任务</span>
                         </li>`
                         break;
                     case('pause'):
+                        // <span class="pause_record">休息 <span class="restTime"> ${option.text}  </span> 时间</span>
                         node = `<li>
-                            <em class="time"> ${option.datetime} </em> 
-                            <span class="pause_record">休息 <span class="restTime"> 5min </span> 时间</span>
+                            <span class="time"> ${option.datetime} </span> 
+                            <span class="pause_record"> ${option.text}</span>
                         </li>`
                         break;
                     case('start'):
                         node = `<li>
-                            <em class="time"> ${option.datetime} </em> 
+                            <span class="time"> ${option.datetime} </span> 
                             <span class="start_record">开始了 <span class="taskName">  ${option.text} </span> 任务</span>
                         </li>`
                         break;
                     case('stop'):
                         node = `<li>
-                            <em class="time">  ${option.datetime} </em> 
+                            <span class="time">  ${option.datetime} </span> 
                             <span class="complete_record">结束 <span class="taskName"> ${option.text}  </span> 任务</span>
                         </li>`
                         break;
                 }
                 return node
             },
-            
             countDown:function(minitues){
                 if(!minitues){
                     // $('#canvas').css('display','none')
                     // return
                     minitues = 0
                 }
+                // var canvas = this.canvas
+                // var context=canvas.getContext("2d");
+
+                // canvas.width=WINDOW_WIDTH;
+                // canvas.height=WINDOW_HEIGHT;
+
+                // context.clearRect(0,0,canvas.width,canvas.height);
+
                 endTime=new Date();
                 endTime=endTime.getTime()+1000*60* minitues;
                 WINDOW_HEIGHT=document.documentElement.clientHeight||document.body.clientHeight ;
@@ -237,10 +285,18 @@
                 RADIUS=Math.round(WINDOW_WIDTH*4/5/108)-1;//还记得108怎么得来的吗？
                 MARGIN_TOP=Math.round(WINDOW_HEIGHT/5);
 
-                var convas=document.getElementById("canvas");
+                var canvas = this.canvas
+                // var canvas=document.getElementById("canvas");
                 var context=canvas.getContext("2d");
-                convas.width=WINDOW_WIDTH;
-                convas.height=WINDOW_HEIGHT;
+                // canvas.width=0;
+                // canvas.height=0;
+                // context.clearRect(0,0,canvas.width,canvas.height);
+                // context.clearRect(0,0,WINDOW_WIDTH,WINDOW_HEIGHT);
+                canvas.width=WINDOW_WIDTH;
+                canvas.height=WINDOW_HEIGHT;
+                context.clearRect(0,0,WINDOW_WIDTH,WINDOW_HEIGHT);
+                
+                
 
                 curShowTimeSeconds=getCurrentShowTimeSeconds();
 
@@ -263,6 +319,14 @@
                 Tomato_method.setBackgroundGray();
                 // 初始化显示
                 Tomato_method.countDown(0)
+                // 设置时间
+                var fulltime = moment().format("YYYY年MM月DD日")
+                Tomato_method.titleDay_nodeObj.text(fulltime)
+                Tomato_method.setAllTime()
+                setInterval(function(){
+                    Tomato_method.setAllTime()
+                },1000)
+                
             }
         }
         Tomato_method.init()
