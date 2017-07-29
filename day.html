@@ -43,7 +43,7 @@
                 </canvas>  
                 <div id="content">
                     <h2>番茄任务</h2>
-                    <span class='time_tip' style="margin-bottom:0.1rem;">您将在：<span id='time_tip'></span> 完成任务</span>
+                    <span class='time_tip' style="margin-bottom:0.1rem;">您将会在：<span id='time_tip'></span> 完成任务</span>
                     <input id='input' type="text" placeholder="请输入 25 分钟内的任务">
                     <input id='taskName' type="hidden" value="" >
                 </div>
@@ -172,14 +172,14 @@
                     week_index = datetime._d.getDay(),
                     isWorkDay = week_index==6||week_index==0  ? '休息' : '工作日'
                     this.titleDay_nodeObj.text(fulltime.split(' ')[0])
-                    console.log({week_index})
+                    // console.log({week_index})
                     this.titleWeek_nodeObj.text(`星期${weekArr[week_index]}`)
                     this.isWorkDay_nodeObj.text(isWorkDay)
                 }
                 hour_refresh()
-                // setInterval(function(){
-                //     hour_refresh()
-                // },1000*3600)
+                setInterval(function(){
+                    hour_refresh()
+                },1000*3600)
                 
                 setInterval(()=>{
                     fulltime = moment(new Date()).format("YYYY年MM月DD日 HH:mm:ss")
@@ -218,7 +218,8 @@
                 if(this.time_tip_node.css('visibility') == 'hidden'){
                     this.time_tip_node.css('visibility','visible')
                 }
-                this.time_tip_node.children('span').text(this.nowTime((new Date()).getTime()+60*100*minitues))
+                var time_out = (new Date().getTime())+60*1000*minitues
+                this.time_tip_node.children('span').text(moment(time_out).format("YYYY-MM-DD HH:mm:ss"))
             },
             type_flg:null,
             start:function(minitues){
