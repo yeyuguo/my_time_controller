@@ -129,7 +129,7 @@ li{
 .header{
     font-size: 0.6rem;
     color: #999;
-    border:1px solid #444;
+    // border:1px solid #444;
     .BR;
     &>*{
         margin-right: 0.5rem;
@@ -143,8 +143,17 @@ li{
 }
 
 #content{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
     h2{
         color: #444;
+        margin-bottom: 0;
+    }
+    .time_tip{
+        margin-bottom: 0.1rem;
+        visibility: hidden;
     }
     #input{        
         padding:@pd;
@@ -240,6 +249,7 @@ li{
             .center;
             margin-bottom: 0.3rem;
             flex-wrap:wrap;
+            flex-direction:row;
             .time{
                 width: 4rem;
                 flex:2;
@@ -333,9 +343,8 @@ li{
     clear: both;
 }
 .mp0{
-    
+    width:90%;
     padding: 0;
-    width: 90%;
     margin: 0 auto;
     text-align: center;
 }
@@ -343,5 +352,5 @@ li{
 
 // 倒计时
 #canvas{ 
-    display: block;
+    // display: block;
 }
