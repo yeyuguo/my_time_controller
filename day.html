@@ -1,4 +1,4 @@
-<!DOCTYPE>
+<!DOCTYPE html>
 <html>
     <head>
         <meta charset="utf-8">
@@ -12,7 +12,8 @@
                 flex-wrap: wrap;
                 justify-content:center;
             }
-        </style>
+</style>
+        
         <script src='./moment-with-locales.min.js'></script>
         <script src="./moment-zh-cn.js"></script>
 
@@ -43,7 +44,7 @@
                 </canvas>  
                 <div id="content">
                     <h2>番茄任务</h2>
-                    <span class='time_tip' style="margin-bottom:0.1rem;">您将会在：<span id='time_tip'></span> 完成任务</span>
+                    <span class='time_tip' style="margin-bottom:0.1rem;">您将会在：<span id='time_tip'></span> 结束任务</span>
                     <input id='input' type="text" placeholder="请输入 25 分钟内的任务">
                     <input id='taskName' type="hidden" value="" >
                 </div>
@@ -60,13 +61,13 @@
                     <div class="toolContent">
                         <div >
                             
-                            <ul class='on'>
-                                <li><label for="perTime">修改番茄每个任务时间</label><input id='perTime' type="checkbox"></li>
-                                <li><label>修改番茄每个任务时间</label><input id='perTime' type="text"></li>
+                            <ul class="modifySet on">
+                                <li>修改番茄工作时间：<input id="modifyStart" data-last='' type="number" value='25'>　分钟<button >更新</button><span>已更新</span></li>
+                                <li>修改番茄休息时间：<input id='modifyPause' data-last='' type="number" value='5'>　分钟<button >更新</button><span>已更新</span></li>
                             </ul>
                             <strong>临时记录</strong>
                             <ul >
-                                <li>
+                                <!-- <li>
                                     <span class="time">2017-7-25 12:00:00</span> 
                                     <span class="tempRecord start_record">开始了 <span class="taskName">xxxx</span> 任务</span>
                                 </li>
@@ -81,14 +82,15 @@
                                 <li>
                                     <span class="time">2017-7-25 12:25:00</span> 
                                     <span class="tempRecord success_record">恭喜完成了 <span class="taskName"> xxxx  </span> 任务</span>
-                                </li>
-                                
+                                </li> -->
                             </ul>
                         </div>
                         <div style="display:none;">一些番茄法的设置方法 https://alloyteam.github.io/AlloyTimer/ </div>
-                        
                     </div>
                 </div>
+            </div>
+            <div class="charts">
+                <div id="monthChart"></div>
             </div>
              <div class="recordDaily">
                 <div class="title">
@@ -98,7 +100,7 @@
                 </div>
                 <div class="content">
                     <h3>当前记录的历史记录</h3>
-                    <p id='sql_result'>查询记录条数: <span ></span> </p>
+                    <p id='sql_result'> </p>
                     <ul >
                         <li>
                             <span class="time">2017-7-25 12:00:00</span> 
@@ -118,10 +120,13 @@
                         </li>
                     </ul>
                 </div>
-            </div> 
+            </div>
+            
         <!-- <div id='day'>
         </div> -->
     </body>
+      <script src='./echarts.min.js'></script>  
+     <!-- <script src='./echarts.js'></script>  -->
     <script>
 
     $(document).ready(function(){
@@ -157,9 +162,25 @@
             swapUl:(target)=>{
                 $('.toolBtn .setting').on('click',function(){
                     var index = $(this).index()
-                    console.log({index})
+                    // console.log({index})
                     $('.toolContent ul').eq(index).addClass('on').siblings('ul').removeClass('on');
                     $('head title').text(Tomato_method.taskName())
+                })
+                // 更新设置配置 有bug 暂不提供
+                // Tomato_method.modifySetting()
+            },
+            modifySetting:function(){
+                var modifyStart = $('#modifyStart')
+                var modifyPause = $('#modifyPause')
+                document.getElementById('modifyStart').oninput = function(e){
+                    // alert(e.target.value)
+                    // console.log({this:this})
+                    modifyStart.data('last',e.target.value) 
+                }
+                modifyStart.siblings('button').on('click',function(){
+                    var minitues_start = modifyStart.data('last');
+                    Tomato_method.start(minitues_start)
+                    // Tomato_method.pause(minitues_pause)
                 })
             },
             setAllTime:function(){
@@ -225,7 +246,8 @@
             start:function(minitues){
                 var type = 'start'
                 var startNode = $('#button .start')
-                startNode.on('click',()=>{
+                this.inputObj.attr('placeholder',`请输入 ${minitues} 分钟内的任务`) 
+                startNode.on('click',(e)=>{
                     if($('#input').val() == ''){
                         alert('请设置需要完成的任务')
                         return 
@@ -248,12 +270,16 @@
                     this.timeout = setTimeout(()=>{
                         var isSuccess = confirm(`是否完成了设置的 ${this.taskName()} 任务`)
                         if(isSuccess){
+                            this.type_flg = 'success'
                             this.refreshLog('success');
                         }else{
+                            this.type_flg = 'fail'
                             this.refreshLog('fail')
                         }
+                        // 事件完成后，重新绘制图表
+                        // Tomato_method.querySQL({query:'SELECT * FROM Tomato',fn:Tomato_method.renderEchart})
                         // alert(`谢谢自己，已坚持完成设置的 ${this.taskName()} 完成`);
-                        this.type_flg = null;
+                        // this.type_flg = null;
                         this.startNode.removeClass('on');
                     },minitues*60*1000)
                 })
@@ -276,6 +302,7 @@
                     this.refreshLog(type)
                     // 定时器完成后执行的语句
                     this.timeout = setTimeout(()=>{
+                        // this.type_flg = 'complete'
                         this.refreshLog('complete');
                         alert(`完成 ${this.taskName()}`)
                         this.hiddenInput.val('')
@@ -411,6 +438,7 @@
                 });
             },
             querySQL:function(option){
+            // querySQL:function*(option){
                 /*
                 option = {
                     query:'clickType', // 省略，会查询全部
@@ -418,19 +446,26 @@
                     fn:callback
                 }
                 */ 
+                // var db = openDatabaseSync('TomatoDB', '1.0', 'Tomato method DB', 2 * 1024 * 1024);
+                // console.log({db})
+                // debugger
+                // db.SQLTransactionSync(function(tx){
+                //     console.log({tx:tx})
+                // })
                 var db = openDatabase('TomatoDB', '1.0', 'Tomato method DB', 2 * 1024 * 1024);
-                
                 db.transaction(function (tx) {
-                    tx.executeSql(`SELECT ${ option.query|| '*'} FROM Tomato`, [], function (tx, results) {
+                    // tx.executeSql(`SELECT ${ option.query|| '*'} FROM Tomato`, [], function (tx, results) {
+                    tx.executeSql(`${ option.query || 'SELECT * FROM Tomato'}`, [], function (tx, results) {
                         var len = results.rows.length, i;
-                        msg = "<span>" + len + "</span>";
-                        document.getElementById('sql_result').innerHTML +=  msg;
+                        // msg = "<span style='display:inline-block'>" + len + "</span>";
+                        document.getElementById('sql_result').innerHTML =  `查询记录条数:${len}`;
                         // console.log(results.rows)
                         if(option.fn){
                             option.fn(results.rows)
                             // Array.from(results.rows) 转成数组处理
                             // Array.from(results.rows).forEach(Tomato_method.renderHistory)
                         }
+                        
                         // for (i = 0; i < len; i++){
                         //     console.log(results.rows.item(i).task );
                         // }
@@ -454,16 +489,208 @@
                     Tomato_method.historyRecord.prepend(node)
                 }
             },
+            save_query_result:{
+                start:null,
+                fail:null,
+                complete:null,
+                success:null,
+                stop:null
+            },
+            renderEchart:function(data){
+                // console.log('查询结果：',data)
+                var myChart = echarts.init(document.getElementById('monthChart'));
+
+                var dd = Array.from(data); // 转成数组
+                var start = dd[0].datetime.split(' ')[0];
+                var end = dd[dd.length-1].datetime.split(' ')[0];
+                var myChart = echarts.init(document.getElementById('monthChart'));
+                var cellWidth = $('#monthChart').width()/8
+                // var cellSize = [60, 80];
+                var cellSize = [cellWidth, 65];
+                var pieRadius = 20;
+                var _query_datetime = function(option){
+                    /*
+                    option = {
+                        data: [], // 数据源
+                        value:"",// 字段匹配值
+                        query:(d)=>{...}
+                    }
+                    */
+                    var new_data = option.data.filter(function(d,index){
+                        return d.datetime.split(' ')[0] == option.value
+                    })
+                    return new_data
+                }
+                var _query_clickType = function(option){
+                    /*
+                    option = {
+                        data: [], // 数据源
+                        key:'clickType', // 数据库字段
+                        value:"",// 字段匹配值
+                        query:(d)=>{...}
+                    }
+                    */
+                    
+                    var new_data = option.data.filter(function(d,index){
+                        return d.clickType == option.value
+                    })
+                    return new_data
+
+                }
+                // 查询结果保存
+                // Tomato_method.querySQL({query:'SELECT * FROM Tomato WHERE clickType="start"',fn:(data)=>{Tomato_method.save_query_result.start = Array.from(data)}})
+                // // Tomato_method.querySQL({query:'SELECT * FROM Tomato WHERE clickType="fail"',fn:(data)=>{Tomato_method.save_query_result.start = Array.from(data)}})
+                // Tomato_method.querySQL({query:'SELECT * FROM Tomato WHERE clickType="stop"',fn:(data)=>{Tomato_method.save_query_result.stop = Array.from(data)}})
+
+                function getVirtulData() {
+                    var date = +echarts.number.parseDate(start);
+                    var end = +echarts.number.parseDate(end);
+                    var dayTime = 3600 * 24 * 1000;
+                    var data = [];
+                    // for (var time = date; time < end; time += dayTime) {
+                    //     data.push([
+                    //         echarts.format.formatTime('yyyy-MM-dd', time),
+                    //         Math.floor(Math.random() * 10000)
+                    //     ]);
+                    // }
+                    for(var i=0;i<dd.length;i++){
+                        data.push([
+                            echarts.format.formatTime('yyyy-MM-dd', dd[i].datetime),
+                            dd[i]
+                            // dd[i].datetime.split(' ')[0] == 
+                            // _query_datetime({data:dd,value:dd[i].datetime})
+                        ])
+                    }
+                    return data;
+                }
+
+                function getPieSeries(scatterData, chart) {
+                    // console.log({scatterData})
+                    return echarts.util.map(scatterData, function (item, index) {
+                        var center = chart.convertToPixel('calendar', item);
+                        return {
+                            id: index + 'pie',
+                            type: 'pie',
+                            center: center,
+                            label: {
+                                normal: {
+                                    formatter: '{c}',
+                                    position: 'inside'
+                                }
+                            },
+                            radius: pieRadius,
+                            data: [
+                                // {name: '工作', value: Math.round(Math.random() * 24)},
+                                // {name: '娱乐', value: Math.round(Math.random() * 24)},
+                                // {name: '睡觉', value: Math.round(Math.random() * 24)}
+                                {name: '任务的总事件数', value: _query_clickType({data:_query_datetime({data:dd,value:item[0]}),value:'start'}).length},
+                                {name: '成功事件数', value:  _query_clickType({data:_query_datetime({data:dd,value:item[0]}),value:'success'}).length},
+                                {name: '按时但未完成事件数', value:  _query_clickType({data:_query_datetime({data:dd,value:item[0]}),value:'fail'}).length},
+                                // {name: '完成事件数', value:  _query_clickType({data:_query_datetime({data:dd,value:item[0]}),value:'stop'}).length},
+                                // {name: '休息事件数', value:  _query_clickType({data:_query_datetime({data:dd,value:item[0]}),value:'pause'}).length},
+                            ]
+                        };
+                    });
+                }
+
+                function getPieSeriesUpdate(scatterData, chart) {
+                    return echarts.util.map(scatterData, function (item, index) {
+                        var center = chart.convertToPixel('calendar', item);
+                        return {
+                            id: index + 'pie',
+                            center: center
+                        };
+                    });
+                }
+
+                var scatterData = getVirtulData();
+
+                option = {
+                    tooltip : {},
+                    color:['#7265e6','#00a854','#f04134'],
+                    legend: {
+                        data: ['任务的总事件数','成功事件数','按时但未完成事件数'],
+                        bottom: '5%'
+                    },
+                    grid:{
+                        left:'5%',
+                        right:'5%',
+                        bottom:'20%'
+                    },
+                    calendar: {
+                        top: 'middle',
+                        left: 'center',
+                        orient: 'vertical',
+                        cellSize: cellSize,
+                        yearLabel: {
+                            show: false,
+                            textStyle: {
+                                fontSize: 30
+                            }
+                        },
+                        dayLabel: {
+                            margin: 20,
+                            firstDay: 1,
+                            nameMap: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六']
+                        },
+                        monthLabel: {
+                            show: false
+                        },
+                        // range: ['2017-07']
+                        range: [start.substr(0,7)]
+                    },
+                    series: [{
+                        id: 'label',
+                        type: 'scatter',
+                        coordinateSystem: 'calendar',
+                        symbolSize: 1,
+                        label: {
+                            normal: {
+                                show: true,
+                                formatter: function (params) {
+                                    return echarts.format.formatTime('dd', params.value[0]);
+                                },
+                                offset: [-cellSize[0] / 2 + 10, -cellSize[1] / 2 + 10],
+                                textStyle: {
+                                    color: '#000',
+                                    fontSize: 14
+                                }
+                            }
+                        },
+                        data: scatterData
+                    }]
+                };
+                myChart.setOption(option)
+                
+                // if (!app.inNode) {
+                //     var pieInitialized;
+                        // pieInitialized = true;
+                setTimeout(function () {
+                    myChart.setOption({
+                        series: getPieSeries(scatterData, myChart)
+                    });
+                }, 10);
+                setInterval(function(){
+                    // 图标每小时刷新一次
+                    console.info('图标每小时刷新一次')
+                    myChart.setOption({
+                        series: getPieSeries(scatterData, myChart)
+                    });
+                },1000*3600)
+
+
+            },
             init:()=>{  // 此处的箭头函数，this 指向的是定义该此箭头函数的父级作用域(window)
                 // console.log({this:this}) 
                 // console.log(moment(new Date()).format("YYYY-MM-DD HH:mm:ss"))
                 console.log('test time:',Tomato_method.nowTime())
+                // 暂停、开始、停止 按钮操作  放最前面加载
+                Tomato_method.start(0.05)
+                Tomato_method.pause(0.1)
+                Tomato_method.stop(0) 
                 // 临时记录
                 Tomato_method.swapUl()
-                // 暂停、开始、停止 按钮操作
-                Tomato_method.start(25)
-                Tomato_method.pause(5)
-                Tomato_method.stop(0)
+                
                 // 实时监测 input 输入值
                 Tomato_method.getInputValue();
                 // 暂停、开始、停止 按钮 3个公共的点击事件
@@ -476,7 +703,10 @@
                                 
                 // 数据库操作
                 // Tomato_method.createSQL()
-                Tomato_method.querySQL({query:'*',fn:Tomato_method.renderHistory})
+                Tomato_method.querySQL({query:'SELECT * FROM Tomato',fn:Tomato_method.renderHistory})
+                // 渲染图表
+                // Tomato_method.querySQL({query:'SELECT * FROM Tomato WHERE clickType="start"',fn:Tomato_method.renderEchart})
+                Tomato_method.querySQL({query:'SELECT * FROM Tomato',fn:Tomato_method.renderEchart})
             }
         }
         Tomato_method.init()
